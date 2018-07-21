@@ -1,13 +1,12 @@
-
 # coding: utf-8
 
 # # Follow-Me Project
-# Congratulations on reaching the final project of the Robotics Nanodegree! 
-# 
-# Previously, you worked on the Semantic Segmentation lab where you built a deep learning network that locates a particular human target within an image. For this project, you will utilize what you implemented and learned from that lab and extend it to train a deep learning model that will allow a simulated quadcopter to follow around the person that it detects! 
-# 
+# Congratulations on reaching the final project of the Robotics Nanodegree!
+#
+# Previously, you worked on the Semantic Segmentation lab where you built a deep learning network that locates a particular human target within an image. For this project, you will utilize what you implemented and learned from that lab and extend it to train a deep learning model that will allow a simulated quadcopter to follow around the person that it detects!
+#
 # Most of the code below is similar to the lab with some minor modifications. You can start with your existing solution, and modify and improve upon it to train the best possible model for this task.
-# 
+#
 # You can click on any of the following to quickly jump to that part of this notebook:
 # 1. [Data Collection](#data)
 # 2. [FCN Layers](#fcn)
@@ -39,7 +38,7 @@ from tensorflow import image
 from utils import scoring_utils
 from utils.separable_conv2d import SeparableConv2DKeras, BilinearUpSampling2D
 from utils import data_iterator
-from utils import plotting_tools 
+from utils import plotting_tools
 from utils import model_tools
 
 
@@ -47,7 +46,7 @@ from utils import model_tools
 # In the Classroom, we discussed the different layers that constitute a fully convolutional network (FCN). The following code will introduce you to the functions that you need to build your semantic segmentation model.
 
 # ### Separable Convolutions
-# The Encoder for your FCN will essentially require separable convolution layers, due to their advantages as explained in the classroom. The 1x1 convolution layer in the FCN, however, is a regular convolution. Implementations for both are provided below for your use. Each includes batch normalization with the ReLU activation function applied to the layers. 
+# The Encoder for your FCN will essentially require separable convolution layers, due to their advantages as explained in the classroom. The 1x1 convolution layer in the FCN, however, is a regular convolution. Implementations for both are provided below for your use. Each includes batch normalization with the ReLU activation function applied to the layers.
 
 # In[ ]:
 
@@ -55,15 +54,15 @@ from utils import model_tools
 def separable_conv2d_batchnorm(input_layer, filters, strides=1):
     output_layer = SeparableConv2DKeras(filters=filters,kernel_size=3, strides=strides,
                              padding='same', activation='relu')(input_layer)
-    
-    output_layer = layers.BatchNormalization()(output_layer) 
+
+    output_layer = layers.BatchNormalization()(output_layer)
     return output_layer
 
 def conv2d_batchnorm(input_layer, filters, kernel_size=3, strides=1):
-    output_layer = layers.Conv2D(filters=filters, kernel_size=kernel_size, strides=strides, 
+    output_layer = layers.Conv2D(filters=filters, kernel_size=kernel_size, strides=strides,
                       padding='same', activation='relu')(input_layer)
-    
-    output_layer = layers.BatchNormalization()(output_layer) 
+
+    output_layer = layers.BatchNormalization()(output_layer)
     return output_layer
 
 
@@ -85,16 +84,17 @@ def bilinear_upsample(input_layer):
 # - Build the FCN consisting of encoder block(s), a 1x1 convolution, and decoder block(s).  This step requires experimentation with different numbers of layers and filter sizes to build your model.
 
 # ### Encoder Block
-# Create an encoder block that includes a separable convolution layer using the `separable_conv2d_batchnorm()` function. The `filters` parameter defines the size or depth of the output layer. For example, 32 or 64. 
+# Create an encoder block that includes a separable convolution layer using the `separable_conv2d_batchnorm()` function. The `filters` parameter defines the size or depth of the output layer. For example, 32 or 64.
 
 # In[ ]:
 
 
 def encoder_block(input_layer, filters, strides):
-    
+
     # TODO Create a separable convolution layer using the separable_conv2d_batchnorm() function.
-    
+    output_layer = separable_conv2d_batchnorm(input_layer, filters, strides)
     return output_layer
+
 
 
 # ### Decoder Block
@@ -107,20 +107,20 @@ def encoder_block(input_layer, filters, strides):
 
 
 def decoder_block(small_ip_layer, large_ip_layer, filters):
-    
     # TODO Upsample the small input layer using the bilinear_upsample() function.
-    
+    output = bilinear_upsample(small_ip_layer)
     # TODO Concatenate the upsampled and large input layers using layers.concatenate
-    
+    print ('db_output_{}  large_ip_{}'.format(output.get_shape().as_list(), large_ip_layer.get_shape().as_list()))
+    output = layers.concatenate([output, large_ip_layer], axis=-1)
     # TODO Add some number of separable convolution layers
-    
+    output_layer = separable_conv2d_batchnorm(output, filters)
     return output_layer
 
 
 # ### Model
-# 
-# Now that you have the encoder and decoder blocks ready, go ahead and build your FCN architecture! 
-# 
+#
+# Now that you have the encoder and decoder blocks ready, go ahead and build your FCN architecture!
+#
 # There are three steps:
 # - Add encoder blocks to build the encoder layers. This is similar to how you added regular convolutional layers in your CNN lab.
 # - Add a 1x1 Convolution layer using the conv2d_batchnorm() function. Remember that 1x1 Convolutions require a kernel and stride of 1.
@@ -130,22 +130,37 @@ def decoder_block(small_ip_layer, large_ip_layer, filters):
 
 
 def fcn_model(inputs, num_classes):
-    
-    # TODO Add Encoder Blocks. 
+
+    # TODO Add Encoder Blocks.
     # Remember that with each encoder layer, the depth of your model (the number of filters) increases.
+    filters=[16, 32, 64, 128, 256]
+    final_channel = 128
+    strides=[2]
+    outputs = [None]*(len(filters)+1)
+    outputs[0] = inputs
+    for i,filter in enumerate(filters):
+        outputs[i+1] = encoder_block(outputs[i], filter, strides[0])
+        print ('encoder_{} shape:{}'.format(i, outputs[i+1].get_shape().as_list()))
 
     # TODO Add 1x1 Convolution layer using conv2d_batchnorm().
-    
+    final_output = conv2d_batchnorm(outputs[-1], final_channel, kernel_size=1)
     # TODO: Add the same number of Decoder Blocks as the number of Encoder Blocks
-    
-    
-    # The function returns the output layer of your model. "x" is the final layer obtained from the last decoder_block()
+
+    # The advise was to concatenate the higher blocks not all.
+    # 3rd and fifth block
+    decoded_output = final_output
+    reversed_arr = list(range(len(filters)))[::-1]
+    for i in reversed_arr:
+        print ('decoder_{}'.format(i))
+        decoded_output = decoder_block(decoded_output, outputs[i], filters[i])
+
+    x = decoded_output
     return layers.Conv2D(num_classes, 1, activation='softmax', padding='same')(x)
 
 
 # ## Training <a id='training'></a>
 # The following cells will use the FCN you created and define an ouput layer based on the size of the processed image and the number of classes recognized. You will define the hyperparameters to compile and train your model.
-# 
+#
 # Please Note: For this project, the helper code in `data_iterator.py` will resize the copter images to 160x160x3 to speed up training.
 
 # In[ ]:
@@ -170,15 +185,14 @@ output_layer = fcn_model(inputs, num_classes)
 # - **num_epochs**: number of times the entire training dataset gets propagated through the network.
 # - **steps_per_epoch**: number of batches of training images that go through the network in 1 epoch. We have provided you with a default value. One recommended value to try would be based on the total number of images in training dataset divided by the batch_size.
 # - **validation_steps**: number of batches of validation images that go through the network in 1 epoch. This is similar to steps_per_epoch, except validation_steps is for the validation dataset. We have provided you with a default value for this as well.
-# - **workers**: maximum number of processes to spin up. This can affect your training speed and is dependent on your hardware. We have provided a recommended value to work with. 
+# - **workers**: maximum number of processes to spin up. This can affect your training speed and is dependent on your hardware. We have provided a recommended value to work with.
 
 # In[ ]:
 
-
-learning_rate = 0
-batch_size = 0
-num_epochs = 0
-steps_per_epoch = 200
+learning_rate = 0.001
+batch_size = 8
+num_epochs = 30
+steps_per_epoch = 500
 validation_steps = 50
 workers = 2
 
@@ -225,9 +239,9 @@ model_tools.save_network(model, weight_file_name)
 
 
 # ## Prediction <a id='prediction'></a>
-# 
+#
 # Now that you have your model trained and saved, you can make predictions on your validation dataset. These predictions can be compared to the mask images, which are the ground truth labels, to evaluate how well your model is doing under different conditions.
-# 
+#
 # There are three different predictions available from the helper code provided:
 # - **patrol_with_targ**: Test how well the network can detect the hero from a distance.
 # - **patrol_non_targ**: Test how often the network makes a mistake and identifies the wrong person as the target.
@@ -251,10 +265,10 @@ model_tools.save_network(model, weight_file_name)
 run_num = 'run_1'
 
 val_with_targ, pred_with_targ = model_tools.write_predictions_grade_set(model,
-                                        run_num,'patrol_with_targ', 'sample_evaluation_data') 
+                                        run_num,'patrol_with_targ', 'sample_evaluation_data')
 
-val_no_targ, pred_no_targ = model_tools.write_predictions_grade_set(model, 
-                                        run_num,'patrol_non_targ', 'sample_evaluation_data') 
+val_no_targ, pred_no_targ = model_tools.write_predictions_grade_set(model,
+                                        run_num,'patrol_non_targ', 'sample_evaluation_data')
 
 val_following, pred_following = model_tools.write_predictions_grade_set(model,
                                         run_num,'following_images', 'sample_evaluation_data')
@@ -267,22 +281,22 @@ val_following, pred_following = model_tools.write_predictions_grade_set(model,
 
 
 # images while following the target
-im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','following_images', run_num) 
+im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','following_images', run_num)
 for i in range(3):
     im_tuple = plotting_tools.load_images(im_files[i])
     plotting_tools.show_images(im_tuple)
-    
+
 
 
 # In[ ]:
 
 
 # images while at patrol without target
-im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','patrol_non_targ', run_num) 
+im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','patrol_non_targ', run_num)
 for i in range(3):
     im_tuple = plotting_tools.load_images(im_files[i])
     plotting_tools.show_images(im_tuple)
- 
+
 
 
 # In[ ]:
@@ -290,19 +304,19 @@ for i in range(3):
 
 
 # images while at patrol with target
-im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','patrol_with_targ', run_num) 
+im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','patrol_with_targ', run_num)
 for i in range(3):
  im_tuple = plotting_tools.load_images(im_files[i])
  plotting_tools.show_images(im_tuple)
 
 
 # ## Evaluation <a id='evaluation'></a>
-# Evaluate your model! The following cells include several different scores to help you evaluate your model under the different conditions discussed during the Prediction step. 
+# Evaluate your model! The following cells include several different scores to help you evaluate your model under the different conditions discussed during the Prediction step.
 
 # In[ ]:
 
 
-# Scores for while the quad is following behind the target. 
+# Scores for while the quad is following behind the target.
 true_pos1, false_pos1, false_neg1, iou1 = scoring_utils.score_run_iou(val_following, pred_following)
 
 
@@ -343,7 +357,6 @@ print(final_IoU)
 # In[ ]:
 
 
-# And the final grade score is 
+# And the final grade score is
 final_score = final_IoU * weight
 print(final_score)
-
