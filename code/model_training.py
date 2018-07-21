@@ -187,55 +187,59 @@ output_layer = fcn_model(inputs, num_classes)
 # - **validation_steps**: number of batches of validation images that go through the network in 1 epoch. This is similar to steps_per_epoch, except validation_steps is for the validation dataset. We have provided you with a default value for this as well.
 # - **workers**: maximum number of processes to spin up. This can affect your training speed and is dependent on your hardware. We have provided a recommended value to work with.
 
-# In[ ]:
+if 0:
+    # In[ ]:
 
-learning_rate = 0.001
-batch_size = 8
-num_epochs = 30
-steps_per_epoch = 500
-validation_steps = 50
-workers = 2
-
-
-# In[ ]:
+    learning_rate = 0.001
+    batch_size = 8
+    num_epochs = 10
+    steps_per_epoch = 500
+    validation_steps = 50
+    workers = 2
 
 
-"""
-DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
-"""
-# Define the Keras model and compile it for training
-model = models.Model(inputs=inputs, outputs=output_layer)
-
-model.compile(optimizer=keras.optimizers.Adam(learning_rate), loss='categorical_crossentropy')
-
-# Data iterators for loading the training and validation data
-train_iter = data_iterator.BatchIteratorSimple(batch_size=batch_size,
-                                               data_folder=os.path.join('..', 'data', 'train'),
-                                               image_shape=image_shape,
-                                               shift_aug=True)
-
-val_iter = data_iterator.BatchIteratorSimple(batch_size=batch_size,
-                                             data_folder=os.path.join('..', 'data', 'validation'),
-                                             image_shape=image_shape)
-
-logger_cb = plotting_tools.LoggerPlotter()
-callbacks = [logger_cb]
-
-model.fit_generator(train_iter,
-                    steps_per_epoch = steps_per_epoch, # the number of batches per epoch,
-                    epochs = num_epochs, # the number of epochs to train for,
-                    validation_data = val_iter, # validation iterator
-                    validation_steps = validation_steps, # the number of batches to validate on
-                    callbacks=callbacks,
-                    workers = workers)
+    # In[ ]:
 
 
-# In[ ]:
+    """
+    DON'T MODIFY ANYTHING IN THIS CELL THAT IS BELOW THIS LINE
+    """
+    # Define the Keras model and compile it for training
+    model = models.Model(inputs=inputs, outputs=output_layer)
+
+    model.compile(optimizer=keras.optimizers.Adam(learning_rate), loss='categorical_crossentropy')
+
+    # Data iterators for loading the training and validation data
+    train_iter = data_iterator.BatchIteratorSimple(batch_size=batch_size,
+                                                   data_folder=os.path.join('..', 'data', 'train'),
+                                                   image_shape=image_shape,
+                                                   shift_aug=True)
+
+    val_iter = data_iterator.BatchIteratorSimple(batch_size=batch_size,
+                                                 data_folder=os.path.join('..', 'data', 'validation'),
+                                                 image_shape=image_shape)
+
+    run_num = 'run2'
+    outdir = '/home/robond/RoboND-DeepLearning/data/runs/{}'.format(run_num)
+
+    logger_cb = plotting_tools.LoggerPlotter(outdir)
+    callbacks = [logger_cb]
+
+    model.fit_generator(train_iter,
+                        steps_per_epoch = steps_per_epoch, # the number of batches per epoch,
+                        epochs = num_epochs, # the number of epochs to train for,
+                        validation_data = val_iter, # validation iterator
+                        validation_steps = validation_steps, # the number of batches to validate on
+                        callbacks=callbacks,
+                        workers = workers)
 
 
-# Save your trained model weights
-weight_file_name = 'model_weights'
-model_tools.save_network(model, weight_file_name)
+    # In[ ]:
+
+
+    # Save your trained model weights
+    weight_file_name = 'model_weights_{}'.format(run_num)
+    model_tools.save_network(model, weight_file_name)
 
 
 # ## Prediction <a id='prediction'></a>
@@ -261,15 +265,15 @@ model_tools.save_network(model, weight_file_name)
 
 # In[ ]:
 
-
-run_num = 'run_1'
-
+print('******Evaluation results for patrol with target {} ********'.format(run_num))
 val_with_targ, pred_with_targ = model_tools.write_predictions_grade_set(model,
                                         run_num,'patrol_with_targ', 'sample_evaluation_data')
 
+print('******Evaluation results for patrol non target {} ********'.format(run_num))
 val_no_targ, pred_no_targ = model_tools.write_predictions_grade_set(model,
                                         run_num,'patrol_non_targ', 'sample_evaluation_data')
 
+print('******Evaluation results for following target {} ********'.format(run_num))
 val_following, pred_following = model_tools.write_predictions_grade_set(model,
                                         run_num,'following_images', 'sample_evaluation_data')
 
@@ -282,7 +286,7 @@ val_following, pred_following = model_tools.write_predictions_grade_set(model,
 
 # images while following the target
 im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','following_images', run_num)
-for i in range(3):
+for i in range(min(3, len(im_files))):
     im_tuple = plotting_tools.load_images(im_files[i])
     plotting_tools.show_images(im_tuple)
 
@@ -293,7 +297,7 @@ for i in range(3):
 
 # images while at patrol without target
 im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','patrol_non_targ', run_num)
-for i in range(3):
+for i in range(min(3, len(im_files))):
     im_tuple = plotting_tools.load_images(im_files[i])
     plotting_tools.show_images(im_tuple)
 
@@ -305,7 +309,7 @@ for i in range(3):
 
 # images while at patrol with target
 im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','patrol_with_targ', run_num)
-for i in range(3):
+for i in range(min(3, len(im_files))):
  im_tuple = plotting_tools.load_images(im_files[i])
  plotting_tools.show_images(im_tuple)
 

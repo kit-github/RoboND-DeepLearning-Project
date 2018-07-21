@@ -104,7 +104,7 @@ def plot_keras_model(model, fig_name):
     keras.utils.vis_utils.plot_model(model, os.path.join(base_path, fig_name +'_with_shapes'), show_shapes=True)
 
 
-def train_val_curve(train_loss, val_loss=None):
+def train_val_curve(train_loss, val_loss=None, epoch=None, outdir=None):
     train_line = plt.plot(train_loss, label='train_loss')
     train_patch = mpatches.Patch(color='blue',label='train_loss')
     handles = [train_patch]
@@ -118,6 +118,15 @@ def train_val_curve(train_loss, val_loss=None):
     plt.ylabel('loss')
     plt.xlabel('epochs')
     plt.show()
+    if epoch is not None:
+        if outdir is not None:
+            plt_dir = '{}/plots'.format(outdir)
+            make_dir_if_not_exist(plt_dir)
+        else:
+            plt_dir = '.'
+        figname = '{}/epoch_{:03d}.png'.format(plt_dir, epoch)
+        plt.savefig(figname)
+
 
 # modified from the BaseLogger in file linked below
 # https://github.com/fchollet/keras/blob/master/keras/callbacks.py
@@ -125,9 +134,10 @@ class LoggerPlotter(keras.callbacks.Callback):
     """Callback that accumulates epoch averages of metrics.
     and plots train and validation curves on end of epoch
     """
-    def __init__(self):
+    def __init__(self, outdir='.'):
         self.hist_dict = {'loss':[], 'val_loss':[]}
-        
+        self.outdir = outdir
+
     def on_epoch_begin(self, epoch, logs=None):
         self.seen = 0
         self.totals = {}
@@ -154,6 +164,7 @@ class LoggerPlotter(keras.callbacks.Callback):
             self.hist_dict['loss'].append(logs['loss'])
             if 'val_loss' in self.params['metrics']:
                 self.hist_dict['val_loss'].append(logs['val_loss'])
-                train_val_curve(self.hist_dict['loss'], self.hist_dict['val_loss'])
+                train_val_curve(self.hist_dict['loss'], self.hist_dict['val_loss'], epoch=epoch, outdir=self.outdir)
             else:
-                train_val_curve(self.hist_dict['loss'])
+                train_val_curve(self.hist_dict['loss'],
+                                epoch=epoch, outdir=self.outdir)
