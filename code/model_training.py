@@ -49,6 +49,8 @@ import ipdb
 # ### Separable Convolutions
 # The Encoder for your FCN will essentially require separable convolution layers, due to their advantages as explained in the classroom. The 1x1 convolution layer in the FCN, however, is a regular convolution. Implementations for both are provided below for your use. Each includes batch normalization with the ReLU activation function applied to the layers.
 
+# Testing if it is different
+
 # In[ ]:
 
 
