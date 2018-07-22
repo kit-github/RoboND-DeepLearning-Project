@@ -31,7 +31,9 @@ import os
 import glob
 import numpy as np
 import matplotlib
-matplotlib.use('TkAgg')
+matplotlib.use('Agg')
+#import matplotlib
+#matplotlib.use('TkAgg')
 import matplotlib.patches as mpatches 
 import matplotlib.pyplot as plt
 from tensorflow.contrib.keras.python import keras
