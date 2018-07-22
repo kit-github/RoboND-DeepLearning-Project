@@ -41,6 +41,7 @@ from utils import data_iterator
 from utils import plotting_tools
 from utils import model_tools
 
+import ipdb
 
 # ## FCN Layers <a id='fcn'></a>
 # In the Classroom, we discussed the different layers that constitute a fully convolutional network (FCN). The following code will introduce you to the functions that you need to build your semantic segmentation model.
@@ -187,18 +188,21 @@ output_layer = fcn_model(inputs, num_classes)
 # - **validation_steps**: number of batches of validation images that go through the network in 1 epoch. This is similar to steps_per_epoch, except validation_steps is for the validation dataset. We have provided you with a default value for this as well.
 # - **workers**: maximum number of processes to spin up. This can affect your training speed and is dependent on your hardware. We have provided a recommended value to work with.
 
+run_num = 'run_test'
+
 if 0:
     # In[ ]:
 
     learning_rate = 0.001
     batch_size = 8
-    num_epochs = 10
-    steps_per_epoch = 500
+    num_epochs = 1
+    steps_per_epoch = 50
     validation_steps = 50
     workers = 2
 
 
     # In[ ]:
+    outdir = '/home/robond/RoboND-DeepLearning/data/runs/{}'.format(run_num)
 
 
     """
@@ -219,9 +223,7 @@ if 0:
                                                  data_folder=os.path.join('..', 'data', 'validation'),
                                                  image_shape=image_shape)
 
-    run_num = 'run2'
-    outdir = '/home/robond/RoboND-DeepLearning/data/runs/{}'.format(run_num)
-
+    
     logger_cb = plotting_tools.LoggerPlotter(outdir)
     callbacks = [logger_cb]
 
@@ -256,26 +258,29 @@ if 0:
 
 # If you need to load a model which you previously trained you can uncomment the codeline that calls the function below.
 
-# weight_file_name = 'model_weights'
-# restored_model = model_tools.load_network(weight_file_name)
-
-
+if 0:
+    weight_file_name = 'model_weights'
+    model = models.Model(inputs=inputs, outputs=output_layer)
+    restored_model = model_tools.load_network(weight_file_name)
+    model = restored_model
+    
 # The following cell will write predictions to files and return paths to the appropriate directories.
 # The `run_num` parameter is used to define or group all the data for a particular model run. You can change it for different runs. For example, 'run_1', 'run_2' etc.
 
 # In[ ]:
 
-print('******Evaluation results for patrol with target {} ********'.format(run_num))
-val_with_targ, pred_with_targ = model_tools.write_predictions_grade_set(model,
-                                        run_num,'patrol_with_targ', 'sample_evaluation_data')
+if 0:
+    print('******Evaluation results for patrol with target {} ********'.format(run_num))
+    val_with_targ, pred_with_targ = model_tools.write_predictions_grade_set(model,
+                                                                            run_num,'patrol_with_targ', 'sample_evaluation_data')
 
-print('******Evaluation results for patrol non target {} ********'.format(run_num))
-val_no_targ, pred_no_targ = model_tools.write_predictions_grade_set(model,
-                                        run_num,'patrol_non_targ', 'sample_evaluation_data')
+    print('******Evaluation results for patrol non target {} ********'.format(run_num))
+    val_no_targ, pred_no_targ = model_tools.write_predictions_grade_set(model,
+                                                                        run_num,'patrol_non_targ', 'sample_evaluation_data')
 
-print('******Evaluation results for following target {} ********'.format(run_num))
-val_following, pred_following = model_tools.write_predictions_grade_set(model,
-                                        run_num,'following_images', 'sample_evaluation_data')
+    print('******Evaluation results for following target {} ********'.format(run_num))
+    val_following, pred_following = model_tools.write_predictions_grade_set(model,
+                                                                            run_num,'following_images', 'sample_evaluation_data')
 
 
 # Now lets look at your predictions, and compare them to the ground truth labels and original images.
@@ -286,12 +291,10 @@ val_following, pred_following = model_tools.write_predictions_grade_set(model,
 
 # images while following the target
 im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','following_images', run_num)
-for i in range(min(3, len(im_files))):
+for i in range(min(10, len(im_files))):
     im_tuple = plotting_tools.load_images(im_files[i])
     plotting_tools.show_images(im_tuple)
-
-
-
+    ipdb.set_trace()
 # In[ ]:
 
 
@@ -310,10 +313,10 @@ for i in range(min(3, len(im_files))):
 # images while at patrol with target
 im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','patrol_with_targ', run_num)
 for i in range(min(3, len(im_files))):
- im_tuple = plotting_tools.load_images(im_files[i])
- plotting_tools.show_images(im_tuple)
+    im_tuple = plotting_tools.load_images(im_files[i])
+    plotting_tools.show_images(im_tuple)
 
-
+ipdb.set_trace()
 # ## Evaluation <a id='evaluation'></a>
 # Evaluate your model! The following cells include several different scores to help you evaluate your model under the different conditions discussed during the Prediction step.
 
@@ -364,3 +367,5 @@ print(final_IoU)
 # And the final grade score is
 final_score = final_IoU * weight
 print(final_score)
+
+ipdb.set_trace()
