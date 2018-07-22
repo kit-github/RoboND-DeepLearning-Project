@@ -49,6 +49,8 @@ import ipdb
 # ### Separable Convolutions
 # The Encoder for your FCN will essentially require separable convolution layers, due to their advantages as explained in the classroom. The 1x1 convolution layer in the FCN, however, is a regular convolution. Implementations for both are provided below for your use. Each includes batch normalization with the ReLU activation function applied to the layers.
 
+# Testing if it is different
+
 # In[ ]:
 
 
@@ -188,21 +190,21 @@ output_layer = fcn_model(inputs, num_classes)
 # - **validation_steps**: number of batches of validation images that go through the network in 1 epoch. This is similar to steps_per_epoch, except validation_steps is for the validation dataset. We have provided you with a default value for this as well.
 # - **workers**: maximum number of processes to spin up. This can affect your training speed and is dependent on your hardware. We have provided a recommended value to work with.
 
-run_num = 'run_test'
+run_num = 'run_imac1'
 
-if 0:
+if 1:
     # In[ ]:
 
     learning_rate = 0.001
     batch_size = 8
-    num_epochs = 1
-    steps_per_epoch = 50
+    num_epochs = 30
+    steps_per_epoch = 500
     validation_steps = 50
     workers = 2
 
 
     # In[ ]:
-    outdir = '/home/robond/RoboND-DeepLearning/data/runs/{}'.format(run_num)
+    outdir = '../data/runs/{}'.format(run_num)
 
 
     """
@@ -269,7 +271,7 @@ if 0:
 
 # In[ ]:
 
-if 0:
+if 1:
     print('******Evaluation results for patrol with target {} ********'.format(run_num))
     val_with_targ, pred_with_targ = model_tools.write_predictions_grade_set(model,
                                                                             run_num,'patrol_with_targ', 'sample_evaluation_data')
