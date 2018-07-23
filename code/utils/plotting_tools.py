@@ -120,7 +120,8 @@ def train_val_curve(train_loss, val_loss=None, epoch=None, outdir=None):
     plt.ylabel('loss')
     plt.xlabel('epochs')
     plt.show()
-    if epoch is not None:
+    if 0:
+      if epoch is not None:
         if outdir is not None:
             plt_dir = '{}/plots'.format(outdir)
             make_dir_if_not_exist(plt_dir)
