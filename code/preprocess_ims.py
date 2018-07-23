@@ -109,7 +109,7 @@ def combine_masks(processed_folder):
         new_fname = base_name[:ind] + 'mask'+ base_name[ind+4:]
 
         dir_base = str(os.sep).join(i.split(str(os.sep))[:-1])
-        misc.imsave(os.path.join(dir_base, new_fname), im)
+        misc.imsave(os.path.join(dir_base, new_fname), im.astype('uint8')*255)
         os.remove(i)
         os.remove(cam3[e])
         os.remove(cam4[e])
