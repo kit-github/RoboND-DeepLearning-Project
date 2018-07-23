@@ -30,10 +30,32 @@ A 3X3 depth separable filter will apply 3X3 to R, and 3x3 applied to G and 3x3 a
 4. 1x1 convolution.
 They are used to make the network fully convolutional. Normally one would take the last layer and connect with a fully connected layer. 
 
+5. Skip connections
+Skip connections provide information to the decoder from the earlier layer of the network. This results in better reconstruction of the segmentation mask. This can be helpful to create sharp boundaries and also segment out smaller objects.
+
 DeepLearning Project. 
 The base net from the segmentation exercise worked quite well with the default data that was provided.
     1. Got final score of 0.36 pretty with the default dataset that came with the assignment. Close to 0.4 needed for the assignment but not there yet.
     2. Tried the model with the follow me exercise on the Quad copter and it worked fairly well.
+
+Hyper-Parameters
+---------------
+The student explains their neural network parameters including the values selected and how these values were obtained (i.e. how was hyper tuning performed? Brute force, etc.) Hyper parameters include, but are not limited to:
+
+Epoch - Tried with few epochs. The performance wasn't good. 
+Learning Rate - Low learning rates took much longer. 
+Batch Size - batch size of 8 and 16. Didn't try higher
+
+1x1 convolutions and when are they needed. 
+-----------------
+They are used to make the network fully convolutional. Normally one would take the last layer, flatten it and then connect with a fully connected layer. However, in flattening it and connecting it we hardcode the pixel location -- top-left pixel is now the first neuron and bottom-right the last most. The network loose the translation invariance. Also the kernel in the fully-connected layer can only work for certain size images since the size of the flattened layer can't change.
+
+On the other hand 1x1 convolution uses the same weight irrespective of the spatial location of the last layer of encoder. Hence, if the image is larger than the last larger of encoder will be larger but since 1x1 convolution works on depth, it isn't effected by it. The output of 1x1 will be larger size also. 1x1 convolution learn the dependencies between the channels irrespective of the pixel location. Making them translation invariant. They can be used to compress the channel size -- reduce redundancy and to develop more complex function using the individual channel values.
+
+Reasons for encoding / decoding images
+---------------------------------------
+1. Encoder is learning features that can be used to detect objects. Normally we will have a class at the end.
+2. Decoder is used to recreate the segmentation mask from these features. The skip connections 
 
 Attempts to improve network architecture
 -----------------------------------------
