@@ -31,7 +31,7 @@ import os
 import glob
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 #import matplotlib
 #matplotlib.use('TkAgg')
 import matplotlib.patches as mpatches 
@@ -39,7 +39,6 @@ import matplotlib.pyplot as plt
 from tensorflow.contrib.keras.python import keras
 from scipy import misc
 plt.ion()
-import ipdb
 
 def make_dir_if_not_exist(path):
     if not os.path.exists(path):
@@ -48,6 +47,7 @@ def make_dir_if_not_exist(path):
 def show(im, x=5, y=5):
     plt.figure(figsize=(x,y))
     plt.imshow(im)
+    plt.draw()
     plt.show()
     
 def show_images(maybe_ims, x=4, y=4):

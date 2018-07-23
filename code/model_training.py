@@ -190,9 +190,41 @@ output_layer = fcn_model(inputs, num_classes)
 # - **validation_steps**: number of batches of validation images that go through the network in 1 epoch. This is similar to steps_per_epoch, except validation_steps is for the validation dataset. We have provided you with a default value for this as well.
 # - **workers**: maximum number of processes to spin up. This can affect your training speed and is dependent on your hardware. We have provided a recommended value to work with.
 
-run_num = 'run_imac1'
+run_num_val = 4
+run_num = 'run_gpu_{:02d}'.format(run_num_val)
 
-if 1:
+learning_rate = 0.0001
+batch_size = 16
+num_epochs = 20
+steps_per_epoch = 325
+validation_steps = 140
+workers = 3
+
+# Save the parameter in json file
+
+import json
+json_dict = {}
+
+json_dict['run_num'] = run_num
+json_dict['filters'] = filters
+json_dict['final_channels'] = final_channels
+json_dict['strides']= strides
+json_dict['learning_rate']=learning_rate
+json_dict['batch_size'] = batch_size
+json_dict['num_epochs'] = num_epochs
+json_dict['steps_per_epochs'] = steps_per_epoch
+json_dict['validation_steps'] = validation_steps
+json_dict['workers'] = workers
+
+json_file = '../data/weights/{}.json'.format(run_num)
+with open(json_file, 'w') as outfile:
+         json.dump(json_dict, outfile, sort_keys = False, indent = 4,
+                                  ensure_ascii = False)
+
+         outdir = '../data/runs/{}'.format(run_num)
+
+
+if 0:
     # In[ ]:
 
     learning_rate = 0.001
@@ -260,7 +292,8 @@ if 1:
 
 # If you need to load a model which you previously trained you can uncomment the codeline that calls the function below.
 
-if 0:
+load_model=True
+if load_model:
     weight_file_name = 'model_weights'
     model = models.Model(inputs=inputs, outputs=output_layer)
     restored_model = model_tools.load_network(weight_file_name)
@@ -269,9 +302,10 @@ if 0:
 # The following cell will write predictions to files and return paths to the appropriate directories.
 # The `run_num` parameter is used to define or group all the data for a particular model run. You can change it for different runs. For example, 'run_1', 'run_2' etc.
 
-# In[ ]:
+run_pred = True
 
-if 1:
+# In[ ]:
+if run_pred:
     print('******Evaluation results for patrol with target {} ********'.format(run_num))
     val_with_targ, pred_with_targ = model_tools.write_predictions_grade_set(model,
                                                                             run_num,'patrol_with_targ', 'sample_evaluation_data')
@@ -289,36 +323,31 @@ if 1:
 # Run each of the following cells to visualize some sample images from the predictions in the validation set.
 
 # In[ ]:
+show_sample_results=True
+if show_sample_results:
+    # images while following the target
+    im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','following_images', run_num)
+
+    for i in range(min(3, len(im_files))):
+        im_tuple = plotting_tools.load_images(im_files[i])
+        plotting_tools.show_images(im_tuple)
 
 
-# images while following the target
-im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','following_images', run_num)
-for i in range(min(10, len(im_files))):
-    im_tuple = plotting_tools.load_images(im_files[i])
-    plotting_tools.show_images(im_tuple)
-    ipdb.set_trace()
-# In[ ]:
-
-
-# images while at patrol without target
-im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','patrol_non_targ', run_num)
-for i in range(min(3, len(im_files))):
-    im_tuple = plotting_tools.load_images(im_files[i])
-    plotting_tools.show_images(im_tuple)
-
-
-
-# In[ ]:
+    # images while at patrol without target
+    im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','patrol_non_targ', run_num)
+    for i in range(min(3, len(im_files))):
+        im_tuple = plotting_tools.load_images(im_files[i])
+        plotting_tools.show_images(im_tuple)
 
 
 
-# images while at patrol with target
-im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','patrol_with_targ', run_num)
-for i in range(min(3, len(im_files))):
-    im_tuple = plotting_tools.load_images(im_files[i])
-    plotting_tools.show_images(im_tuple)
+    # images while at patrol with target
+    im_files = plotting_tools.get_im_file_sample('sample_evaluation_data','patrol_with_targ', run_num)
+    for i in range(min(3, len(im_files))):
+        im_tuple = plotting_tools.load_images(im_files[i])
+        plotting_tools.show_images(im_tuple)
 
-ipdb.set_trace()
+    
 # ## Evaluation <a id='evaluation'></a>
 # Evaluate your model! The following cells include several different scores to help you evaluate your model under the different conditions discussed during the Prediction step.
 
@@ -369,5 +398,22 @@ print(final_IoU)
 # And the final grade score is
 final_score = final_IoU * weight
 print(final_score)
+
+# save the performance to the weights folder
+
+performance_dict={}
+performance_dict['pred_following'] = [true_pos1, false_pos1, false_neg1, iou1]
+performance_dict['pred_no_targ'] = [true_pos2, false_pos2, false_neg2, iou2]
+performance_dict['pred_with_targ']  = [true_pos3, false_pos3, false_neg3, iou3]
+performance_dict['weight'] = weight
+performance_dict['final_IoU'] = final_IoU
+performance_dict['final_score'] = final_score
+
+json_file = '../data/weights/{}_performance.json'.format(run_num)
+with open(json_file, 'w') as outfile:
+         json.dump(performance_dict, outfile, sort_keys = False, indent = 4,
+                                  ensure_ascii = False)
+
+         
 
 ipdb.set_trace()
