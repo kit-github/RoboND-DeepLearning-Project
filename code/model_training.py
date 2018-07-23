@@ -130,15 +130,15 @@ def decoder_block(small_ip_layer, large_ip_layer, filters):
 # - Add decoder blocks for the decoder layers.
 
 # In[ ]:
+filters=[16, 32, 64, 128, 256]
+final_channels = [128]
+strides=[2]
 
 
 def fcn_model(inputs, num_classes):
 
     # TODO Add Encoder Blocks.
     # Remember that with each encoder layer, the depth of your model (the number of filters) increases.
-    filters=[16, 32, 64, 128, 256]
-    final_channel = 128
-    strides=[2]
     outputs = [None]*(len(filters)+1)
     outputs[0] = inputs
     for i,filter in enumerate(filters):
@@ -225,16 +225,6 @@ with open(json_file, 'w') as outfile:
 
 
 if 0:
-    # In[ ]:
-
-    learning_rate = 0.001
-    batch_size = 8
-    num_epochs = 30
-    steps_per_epoch = 500
-    validation_steps = 50
-    workers = 2
-
-
     # In[ ]:
     outdir = '../data/runs/{}'.format(run_num)
 
