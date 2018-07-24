@@ -32,7 +32,15 @@ The student explains their neural network parameters including the values select
 
 **Learning Rate:** I played with different learning rates. The learning rate of 0.01 worked out well in practice. Since the validation and training loss was still jumping, I tried to lower the learning rates to 0.001 and 0.0001. At the lower end 0.0001 made the training much slower though it produced smoother graphs. Also the validation error at the end was higher. 
 
-Learning rate 0.0001 ![learning rate 0.0001](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_larger_network_0.0001_loss.png | width=100)
+* Learning rate 0.0001: ![learning rate 0.0001] <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_larger_network_0.0001_loss.png" width="400" >
+
+* Learning rate 0.001: ![learning rate 0.001]  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_0.001_loss.png" width="400">
+
+* Learning rate 0.01: ![learning rate 0.01]  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png" width="400">
+
+* Learning rate 0.1: ![learning rate 0.1]  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/low_learning_rate/high_learning_0.1_loss.png/epoch.png" width="400">
+
+(https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_larger_network_0.0001_loss.png | width=100)
 
 Learning rate 0.001 ![learning rate 0.001](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_0.001_loss.png | width=100)
 
