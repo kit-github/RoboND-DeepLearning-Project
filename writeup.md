@@ -10,24 +10,21 @@
 **The convolution layers**. Here we use depth separable convolution layers. Depth separable have much less parameters than a regular convolution. Convolution are the main powerhorse of neural nets. Convolution when applied to input can bring out the interesting features which can then be used by subsequent layers to compute even more complex relevant features for the task at hand. Each convolution has a weight matrix associated with it, which is what we end up learning when we do the backprop through the loss.
 
 **Depth Separable Filters**
-Depth separable filters use convolution at each channel separately. if we were to apply 3x3 kernel for a RGB image followed by a 32 channels. Aregular convolution will have 3x3x3*32 = 288 parameters. 
-
-A 3X3 depth separable filter will apply 3X3 to R, and 3x3 applied to G and 3x3 applied to B. Hence it has 3x3 + 3x3 + 3x3 = 27 parameters. The output of this will be a 3 channel layer. The separable convolution then applies 1x1 convolution acrros channels giving 3x32 = 96 parameter for a total of 27+96 = 123 parameters. Less than half the parameter of regular convolution. Hence these nets can be very useful. 
-
+Depth separable filters use convolution at each channel separately. Applying regular convolution with 3x3 kernels for a RGB image with 32 output channels will have 3x3x3*32 = 288 parameters. A 3X3 depth separable filter will apply 3X3 to R,G and B each, giving 3x3 + 3x3 + 3x3 = 27 parameters. The output of this will be a 3 channel layer. The separable convolution then applies 1x1 convolution across channels giving 3x32 = 96 parameter for a total of 27+96 = 123 parameters. Less than half the parameter of regular convolution. Hence these nets can be very useful. 
 
 **Batchnorm layers** Like we normalize the input, batchnorm serves to normalize the input at every intermediate layer. This prevents the net from covariate shift and helps with backpropagation and training. Also, even though batchnormalization makes training slower, it allows the network to be much more stable to initialization and also one can use higher learning rate. It also improves generalization.
 
 **Max Pooling layer** Max Pooling is used to take the maximum in a certain spatial region (2X2). The main idea is that if certain feature is a local neighborhood has a high value, we can use that for the next layers and so. This has two affects. First it build robustness to small translation at each layer, which may be important for classification network. Secondly, it reduces the spatial dimension of the layer's output. This forces the network to learn meaningful concepts at higher level -- with reduced spatial dimension we can still capture the concept. However, it has a downside of loosing spatial information, which can hurt in applications where precise spatial location is important. 
 
 **1x1 Convolution**
-1x1 convolution act as matrix multiplication between the input and output layer. Normally earlier networks use to have the penultimate layer of classification/encoder network flattened and fully-connected to output layer. This has certain downsides for example the network will only work on certain image size. Also, fully connected layer tend to have large number of parameters making it harder to train. 1x1 convolution make the network work with any size images and also has much fewer parameters and achieves good accuracy. 1x1 convolutions make the network fully convolutional and are quite useful for pixel level segmentation networks. See below for more details. 
+1x1 convolution act as matrix multiplication between the input and output layer at each pixel. The weights are the same for all pixels across spatial region. Normally earlier networks use to have the penultimate layer of classification/encoder network flattened and fully-connected to output layer. This has certain downsides for example the network will only work on certain image size. Also, fully connected layer tend to have large number of parameters making it harder to train. 1x1 convolution make the network work with any size images and also has much fewer parameters and achieves good accuracy. 1x1 convolutions make the network fully convolutional and are quite useful for pixel level segmentation networks. See below for more details. 
 
 **Skip Connections**
 Skip connections provide information to the decoder from the earlier layer of the network. This results in better reconstruction of the segmentation mask. This can be helpful to create sharp boundaries and also segment out smaller objects.
 
 
-Hyper-Parameters
----------------
+### Hyper-Parameters
+
 The student explains their neural network parameters including the values selected and how these values were obtained (i.e. how was hyper tuning performed? Brute force, etc.) Hyper parameters include, but are not limited to:
 
 Epoch - Tried with few epochs at first. From the graph it seems that epoch of 2 and 3 the validation loss is same as training loss. However, the network performance wasn't all that good. On the other extreme I tried running with 50 epochs. You can see that after around 20 to 30 epochs the validation loss is not decreasing and infact is getting higher (not by a lot but still) that means the network is overfitting. Based on this I have found a epoch of 25 may be a good stopping point. 
@@ -51,20 +48,7 @@ Reasons for encoding / decoding images
 ---------------------------------------
 1. Encoder is learning features that can be used to detect objects. Normally we will have a class at the end.
 2. Decoder is used to recreate the segmentation mask from these features. The skip connections 
-
-Attempts to improve network architecture
------------------------------------------
-    3. Tried to improve the network but didn't work as well.
-       - running on more epochs.
-       - increasing the layer sizes. 
-
-    4. Added more data and tried. The results still didn't improve.
-
-    5. Reduced the training rate. But that didn't help.
-
-    6. The model seems to be overfitting. How to add regularization loss in keras.
-
-    7. Early stopping -- to prevent overfitting
+    
 
 Issues:
 ------
@@ -73,10 +57,13 @@ The base net from the segmentation exercise worked quite well with the default d
    - encoder_layers =[16, 32, 64, 96, 128]
    - 1x1 convolution = [128] # single layer
    - decoder is just reverse of encoder
-Got final score of 0.36 pretty with the default dataset that came with the assignment. Close to 0.4 needed for the assignment but not there yet. Tried bunch of different architectures in a more unorganized way. Like having larger hidden layers. For example increasing layers to [16, 32, 64, 128, 256] and 1x1 convolution of [128]. It did reasonable, but for the same number of epochs it was making the performance slightly worse. 
 
-** Actions to remedy the issues** 
-I was feeling confused with this disorganized approach. So I did a couple of things. 
+Got a final score of 0.36 with the default dataset that came with the assignment. Close to 0.4 but not there yet. 
+
+Tried bunch of different architectures in a more unorganized way. Like having larger hidden layers. For example increasing layers to [16, 32, 64, 128, 256] and 1x1 convolution of [128]. It did reasonable, but for the same number of epochs it was making the performance slightly worse. 
+
+**Actions to Remedy the Issues** 
+It was getting harder to keep tabs and figure out improvement in an organized way. So I did a couple of things to fix it.  
 
 1. So added code to dump the network architecture, hyper-parameters and the scores of the experiments I was running. 
 
