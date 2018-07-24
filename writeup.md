@@ -28,10 +28,11 @@ Skip connections provide information to the decoder from the earlier layer of th
 The student explains their neural network parameters including the values selected and how these values were obtained (i.e. how was hyper tuning performed? Brute force, etc.) Hyper parameters include, but are not limited to:
 
 Epoch - Tried with few epochs at first. From the graph it seems that epoch of 2 and 3 the validation loss is same as training loss. However, the network performance wasn't all that good. On the other extreme I tried running with 50 epochs. You can see that after around 20 to 30 epochs the validation loss is not decreasing and infact is getting higher (not by a lot but still) that means the network is overfitting. Based on this I have found a epoch of 25 may be a good stopping point. 
-![GitHub Logo](experiments/epoch.png)
+![epochs](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png)
 
 Learning Rate - I played with different learning rates. The learning rate of 0.01 worked out well in practice. Since the validation and training loss was still jumping, I tried to lower the learning rates to 0.001 and 0.0001. At the lower end 0.0001 made the training much slower though it produced smoother graphs. Also the validation error at the end was higher. 
-![GitHub Logo](experiments/learning_rate.png)
+Learning rate 0.0001 ![learning rate 0.0001](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_larger_network_0.0001_loss.png)
+Learning rate 0.001 ![learning rate 0.001](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_0.001_loss.png)
 
 Batch Size - Normally a larger batch size is better and is constraint by the memory your gpu has. Also, there is a sweet spot in terms of computation speed/efficiency. Low batch size of 1 is generally not advisable. So I worked with batch size of 8 and 16. Didn't try higher since that may reduce the speed. 
 ![GitHub Logo](experiments/batch_size.png)
@@ -49,9 +50,11 @@ Reasons for encoding / decoding images
 1. Encoder is learning features that can be used to detect objects. Normally we will have a class at the end.
 2. Decoder is used to recreate the segmentation mask from these features. The skip connections 
     
+    
 
-Issues:
-------
+
+### Challenges 
+
 The base net from the segmentation exercise worked quite well with the default data that was provided. The network has the following architecture.
    - input is (128, 128, 3)
    - encoder_layers =[16, 32, 64, 96, 128]
@@ -62,7 +65,7 @@ Got a final score of 0.36 with the default dataset that came with the assignment
 
 Tried bunch of different architectures in a more unorganized way. Like having larger hidden layers. For example increasing layers to [16, 32, 64, 128, 256] and 1x1 convolution of [128]. It did reasonable, but for the same number of epochs it was making the performance slightly worse. 
 
-**Actions to Remedy the Issues** 
+#### Actions to Remedy the Issues
 It was getting harder to keep tabs and figure out improvement in an organized way. So I did a couple of things to fix it.  
 
 1. So added code to dump the network architecture, hyper-parameters and the scores of the experiments I was running. 
@@ -75,3 +78,27 @@ It was getting harder to keep tabs and figure out improvement in an organized wa
    - Write down the params and the performs numbers to see how well I am doing with changing the architecture
    - Create a better dataset. With lots of small target 
 
+# Final Model and Results
+
+**Performance number:** 
+![Performance](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/performance_numbers.png)
+
+**Results on following target:**
+![following](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/following.png)
+
+**Results on non-target:**
+![non-target](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/non-target.png)
+
+**Results on small-target with other people:** 
+![target](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/small_target.png)
+
+**Training and Validation Loss:** 
+![training_validation_loss](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png)
+
+**Final Model Weights**
+Model weights are in the folder final_model in the project directory. 
+[model_weights](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/model_weights/)
+
+**Final HTML file**
+Please see the .html file for more details. 
+[model_training.html](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/outputs/final_final_model_training.html)
