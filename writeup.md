@@ -1,50 +1,45 @@
 
 
-Network Architecture.
+### Discuss Network Architecture.
 ---------------------
-Segmentation Lab.
 
-0. The segmentation network has the following layers
-   - input is (128, 128, 3)
-   - batch_size 8
-   - learning rate 0.001
-   - encoder_layers =[16, 32, 64, 96, 128]
-   - 1x1 convolution = [128] # single layer
-   - decoder is reverse of [96, 64, 32, 16, 3]
+### Convey the understanding of the network architecture
 
+#### Explain purpose of each layer
 
-Convey the understanding of the network architecture
------------------------------------------------------
-Explain purpose of each layer
-1. The convolution layers. Here we use depth separable convolution layers. Depth separable have much less parameters than a regular convolution. Convolution are the main powerhorse of neural nets. Convolution when applied to input can bring out the interesting features which can then be used by subsequent layers to compute even more complex relevant features for the task at hand. Each convolution has a weight matrix associated with it, which is what we end up learning when we do the backprop through the loss.
+**The convolution layers**. Here we use depth separable convolution layers. Depth separable have much less parameters than a regular convolution. Convolution are the main powerhorse of neural nets. Convolution when applied to input can bring out the interesting features which can then be used by subsequent layers to compute even more complex relevant features for the task at hand. Each convolution has a weight matrix associated with it, which is what we end up learning when we do the backprop through the loss.
 
+**Depth Separable Filters**
 Depth separable filters use convolution at each channel separately. if we were to apply 3x3 kernel for a RGB image followed by a 32 channels. Aregular convolution will have 3x3x3*32 = 288 parameters. 
 
 A 3X3 depth separable filter will apply 3X3 to R, and 3x3 applied to G and 3x3 applied to B. Hence it has 3x3 + 3x3 + 3x3 = 27 parameters. The output of this will be a 3 channel layer. The separable convolution then applies 1x1 convolution acrros channels giving 3x32 = 96 parameter for a total of 27+96 = 123 parameters. Less than half the parameter of regular convolution. Hence these nets can be very useful. 
 
 
-2. Batchnorm layers - Like we normalize the input, batchnorm serves to normalize the input at every intermediate layer. This prevents the net from covariate shift and helps with backpropagation and training. Also, even though batchnormalization makes training slower, it allows the network to be much more stable to initialization and also one can use higher learning rate. It also improves generalization.
+**Batchnorm layers** Like we normalize the input, batchnorm serves to normalize the input at every intermediate layer. This prevents the net from covariate shift and helps with backpropagation and training. Also, even though batchnormalization makes training slower, it allows the network to be much more stable to initialization and also one can use higher learning rate. It also improves generalization.
 
-3. Max Pooling layer - is used to take the maximum in a certain region (2X2). As a result it reduces the spatial size. 
+**Max Pooling layer** Max Pooling is used to take the maximum in a certain spatial region (2X2). The main idea is that if certain feature is a local neighborhood has a high value, we can use that for the next layers and so. This has two affects. First it build robustness to small translation at each layer, which may be important for classification network. Secondly, it reduces the spatial dimension of the layer's output. This forces the network to learn meaningful concepts at higher level -- with reduced spatial dimension we can still capture the concept. However, it has a downside of loosing spatial information, which can hurt in applications where precise spatial location is important. 
 
-4. 1x1 convolution.
-They are used to make the network fully convolutional. Normally one would take the last layer and connect with a fully connected layer. 
+**1x1 Convolution**
+1x1 convolution act as matrix multiplication between the input and output layer. Normally earlier networks use to have the penultimate layer of classification/encoder network flattened and fully-connected to output layer. This has certain downsides for example the network will only work on certain image size. Also, fully connected layer tend to have large number of parameters making it harder to train. 1x1 convolution make the network work with any size images and also has much fewer parameters and achieves good accuracy. 1x1 convolutions make the network fully convolutional and are quite useful for pixel level segmentation networks. See below for more details. 
 
-5. Skip connections
+**Skip Connections**
 Skip connections provide information to the decoder from the earlier layer of the network. This results in better reconstruction of the segmentation mask. This can be helpful to create sharp boundaries and also segment out smaller objects.
 
-DeepLearning Project. 
-The base net from the segmentation exercise worked quite well with the default data that was provided.
-    1. Got final score of 0.36 pretty with the default dataset that came with the assignment. Close to 0.4 needed for the assignment but not there yet.
-    2. Tried the model with the follow me exercise on the Quad copter and it worked fairly well.
 
 Hyper-Parameters
 ---------------
 The student explains their neural network parameters including the values selected and how these values were obtained (i.e. how was hyper tuning performed? Brute force, etc.) Hyper parameters include, but are not limited to:
 
-Epoch - Tried with few epochs. The performance wasn't good. 
-Learning Rate - Low learning rates took much longer. 
-Batch Size - batch size of 8 and 16. Didn't try higher
+Epoch - Tried with few epochs at first. From the graph it seems that epoch of 2 and 3 the validation loss is same as training loss. However, the network performance wasn't all that good. On the other extreme I tried running with 50 epochs. You can see that after around 20 to 30 epochs the validation loss is not decreasing and infact is getting higher (not by a lot but still) that means the network is overfitting. Based on this I have found a epoch of 25 may be a good stopping point. 
+![GitHub Logo](experiments/epoch.png)
+
+Learning Rate - I played with different learning rates. The learning rate of 0.01 worked out well in practice. Since the validation and training loss was still jumping, I tried to lower the learning rates to 0.001 and 0.0001. At the lower end 0.0001 made the training much slower though it produced smoother graphs. Also the validation error at the end was higher. 
+![GitHub Logo](experiments/learning_rate.png)
+
+Batch Size - Normally a larger batch size is better and is constraint by the memory your gpu has. Also, there is a sweet spot in terms of computation speed/efficiency. Low batch size of 1 is generally not advisable. So I worked with batch size of 8 and 16. Didn't try higher since that may reduce the speed. 
+![GitHub Logo](experiments/batch_size.png)
+
+![GitHub Logo](experiments/img1.png)
 
 1x1 convolutions and when are they needed. 
 -----------------
@@ -73,14 +68,21 @@ Attempts to improve network architecture
 
 Issues:
 ------
+The base net from the segmentation exercise worked quite well with the default data that was provided. The network has the following architecture.
+   - input is (128, 128, 3)
+   - encoder_layers =[16, 32, 64, 96, 128]
+   - 1x1 convolution = [128] # single layer
+   - decoder is just reverse of encoder
+Got final score of 0.36 pretty with the default dataset that came with the assignment. Close to 0.4 needed for the assignment but not there yet. Tried bunch of different architectures in a more unorganized way. Like having larger hidden layers. For example increasing layers to [16, 32, 64, 128, 256] and 1x1 convolution of [128]. It did reasonable, but for the same number of epochs it was making the performance slightly worse. 
 
+** Actions to remedy the issues** 
+I was feeling confused with this disorganized approach. So I did a couple of things. 
 
-1. Tried bunch of architecture with larger hidden layers and learning rate but seemed it was making the performane worse.
-nothing was working.
+1. So added code to dump the network architecture, hyper-parameters and the scores of the experiments I was running. 
 
-2. Collected data. Hoping more data will help. Took suggestions. Added 1500 images to the existing training dataset. It didn't help as much either
+2. Collected data, but only after analysis of where the model is failing. Earlier attempts to just add data didn't help. Later went back to default dataset and saw that my model wasn't working as well on smaller targets. Added a sample of around 1200 images where the target was small with other people in the scene. 
 
-3. Anaylzed the scores and realized that the peformance for small target is quite bad and I need perhaps more data on this side. This has been driving the performance low.
+3. Anaylzed the scores and realized that the peformance for small target is still not as good. Reduced the size of the network, so the earlier layers can have more say. The small targets were getting lost in the later layers The size of the dataset and the fact that smaller targets were not getting detected quite bad and I need perhaps more data on this side. This has been driving the performance low.
 
 4. Realized that I need to be methodical.
    - Write down the params and the performs numbers to see how well I am doing with changing the architecture
