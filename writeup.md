@@ -32,38 +32,38 @@ The student explains their neural network parameters including the values select
 
 **Learning Rate:** I played with different learning rates. The learning rate of 0.01 worked out well in practice. Since the validation and training loss was still jumping, I tried to lower the learning rates to 0.001 and 0.0001. At the lower end 0.0001 made the training much slower though it produced smoother graphs. Also the validation error at the end was higher. 
 
-* Learning rate 0.0001: ![learning rate 0.0001] <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_larger_network_0.0001_loss.png" width="400" >
+LR=0.0001 <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_larger_network_0.0001_loss.png" width="300" >   LR=0.001 <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_0.001_loss.png" width="300">
 
-* Learning rate 0.001: ![learning rate 0.001]  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_0.001_loss.png" width="400">
 
-* Learning rate 0.01: ![learning rate 0.01]  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png" width="400">
+LR=0.01<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png" width="300">   LR=0.1 <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/low_learning_rate/learning_rate_0.1_bz_16.png" width="300">
+ 
+ Learning rate of 0.01 worked best. It has good validation accuracy and converged faster. 
+                   
 
-* Learning rate 0.1: ![learning rate 0.1]  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/low_learning_rate/high_learning_0.1_loss.png/epoch.png" width="400">
+**Batch Size:** Normally a larger batch size is better and is constraint by the memory your gpu has. Also, there is a sweet spot in terms of computation speed/efficiency. Low batch size of 1 is generally not advisable. I tried many different size with learning rate fixed to 0.01. The batch size of 16 seemed to work the best. Higher batch size at learning rate of 0.01 where not converging faster. Seems like learning rate depends on the batch size. Please see below for more info. For this experiment I used only 1600 of training images. 
+Batch size ![batch size 8](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_8.png )
+Batch size ![batch size 16](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_16.png)
+Batch size ![batch size 32](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_32.png)
+Batch size ![batch size 64](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_64.png)
 
-(https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_larger_network_0.0001_loss.png | width=100)
+**Learning rate and batch size**
+Learning rate and batch size are somewhat dependent on each other. Learning rate of 0.01 may be high for smaller batch size than for larger batch size and may be small for a batch size of 32 or 64. Doing detailed analysis of both will be hard, but please see this interesting article on this https://miguel-data-sc.github.io/2017-11-05-first/. 
+As an example, if we reduce the learning rate to 0.01 for batch size of 8 the results improve see figure. 
+Learning rate and Batch size ![learning rate batch size 8](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/learning_and_batch_size_8.png)
 
-Learning rate 0.001 ![learning rate 0.001](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_0.001_loss.png | width=100)
 
-**Batch Size:** Normally a larger batch size is better and is constraint by the memory your gpu has. Also, there is a sweet spot in terms of computation speed/efficiency. Low batch size of 1 is generally not advisable. So I worked with batch size of 8 and 16. Didn't try higher since that may reduce the speed. 
-Batch size ![batch size 1](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/batch_size_1.png | width=100)
-Batch size ![batch size 8](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/batch_size_8.png | width=100)
-Batch size ![batch size 16](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/batch_size_16.png | width=100)
-Batch size ![batch size 32](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/batch_size_32.png | width=100)
-Batch size ![batch size 64](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/batch_size_64.png | width=100)
+### 1x1 Convolutions
 
-1x1 convolutions and when are they needed. 
------------------
-They are used to make the network fully convolutional. Normally one would take the last layer, flatten it and then connect with a fully connected layer. However, in flattening it and connecting it we hardcode the pixel location -- top-left pixel is now the first neuron and bottom-right the last most. The network loose the translation invariance. Also the kernel in the fully-connected layer can only work for certain size images since the size of the flattened layer can't change.
+Unlike having fully connected layer, 1x1 convolution provide many benefits compared. First it allow us to run the network on any size images. Also, unlike fully connected network it has much fewer parameters and achieves good accuracy. When netweork uses fully connected layer, they flatten the last layer and then connect with outputs. Because of this flattening the network  ends up hardcoding the relative pixel location in the penultimate layer (that has been flattened). That is top-left pixel has entirely different weights than the middle pixel and the bottom-right pixel. This isn't necessarily the cases for images, which are somewhat translation invariant. 
 
-On the other hand 1x1 convolution uses the same weight irrespective of the spatial location of the last layer of encoder. Hence, if the image is larger than the last larger of encoder will be larger but since 1x1 convolution works on depth, it isn't effected by it. The output of 1x1 will be larger size also. 1x1 convolution learn the dependencies between the channels irrespective of the pixel location. Making them translation invariant. They can be used to compress the channel size -- reduce redundancy and to develop more complex function using the individual channel values.
+1x1 convolution uses the same weight irrespective of the location of the last layer of encoder/penultimate -- providing translation invariance. 1x1 convolution learns the dependencies between the input and output channels irrespective of the pixel location. They can be often used to compress the channel size -- reduce redundancy and to develop more complex function using the individual channel values.
 
 Reasons for encoding / decoding images
 ---------------------------------------
-1. Encoder is learning features that can be used to detect objects. Normally we will have a class at the end.
-2. Decoder is used to recreate the segmentation mask from these features. The skip connections 
-    
-    
+1. Encoder network is a stack of convolution and pooling layers that are added on top of each other. The main idea of the encoder network is to learn the increasing complex set of features that can be used to understand the scene or classes that we are trying to segment. Encoder network layers reduces in spatial size and increase in terms of channels. They sacrifice the spatial information for more complex features that can detect background from hero and other people. 
 
+2. Decoder networks on the other hand that these abstract features which are low in spatial dimension and create segmentation mask of the same size as the original image. One can think of the decoder network as an upsampling layer, which uses the coarse level segmentation at the top most layer of the encoder and create a high resolution segmentation mask. The decoder network can have connection from earlier layers using skip connection or summation operation to get fine level of segmentation. 
+    
 
 ### Challenges 
 
