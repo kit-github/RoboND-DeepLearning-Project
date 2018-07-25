@@ -89,7 +89,9 @@ Batch size 32: <img src="images/batch_size/batch_size_32.png" width="300">  Batc
 
 **Learning rate and batch size**
 Learning rate and batch size are somewhat dependent on each other. Learning rate of 0.01 may be high for smaller batch size than for larger batch size and may be small for a batch size of 32 or 64. Doing detailed analysis of both will be hard, but please see this interesting article on this https://miguel-data-sc.github.io/2017-11-05-first/. 
+
 As an example, if we reduce the learning rate to 0.01 for batch size of 8 the results improve see figure. 
+
 Learning rate and Batch size ![learning rate batch size 8](images/low_learning_rate/learning_and_batch_size_8.png)
 
 
