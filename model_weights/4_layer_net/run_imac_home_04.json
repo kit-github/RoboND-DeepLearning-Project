@@ -1,0 +1,21 @@
+{
+    "final_channels": [
+        256
+    ],
+    "steps_per_epochs": 325,
+    "strides": [
+        2
+    ],
+    "num_epochs": 50,
+    "filters": [
+        32,
+        64,
+        128,
+        256
+    ],
+    "workers": 2,
+    "learning_rate": 0.01,
+    "run_num": "run_imac_home_04",
+    "validation_steps": 70,
+    "batch_size": 16
+}
