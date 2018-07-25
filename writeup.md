@@ -26,14 +26,16 @@ Skip connections provide information to the decoder from the earlier layer of th
 
 Tested with couple of different network design. All the design included convolution followed by pooling. I call this as one layer. We are using depth separable convolution and skip connections as suggested in the segmentation lab. They provide many benefits which are discussed above. In this section we will see how added more depth effects the performance of the network 
 
-final_channels refer to the size of 1x1 convolution and filter refers to the channels of each of the convolution layer. Stides is fixed at 2.
+For the discussion below, final_channels refer to the size of 1x1 convolution and filter refers to the channels of each of the convolution layer. Stides is fixed at 2.
+
 **2 Layer Net**
  2 Layer net with filters=[32, 64], final_channels = [64]. The networked surprising well with final_score of 0.37. Please see figures below. It struggled to get larger object both target and non-targets and this makes sense since the field of view of 2 layer net isn't as large. 
 
-1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/loss.png" width="300" >
-2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/performance_2_layer_net.png" width="300" >
+1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/loss.png" width="400" >
+2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/performance_2_layer_net.png" width="400" >
 
-3. Samples:<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/following.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/target.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/non-target.png" width="300" >
+3. Samples: 
+<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/following.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/target.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/non-target.png" width="200" >
 
 
 **3 Layer Net (Best Results)**
@@ -42,10 +44,11 @@ filters=[32, 64, 128]
 final_channels = [128]
 Please see the sample of results below. 
 
-1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/3_layer_net/loss.png" width="300" >
-2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/performance_3_layer_net.png" width="300" >
+1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/loss.png" width="400" >
+2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/performance_3_layer.png" width="400" >
 
-3. Samples:<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/3_layer_net/following.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/3_layer_net/target.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/3_layer_net/non-target.png" width="300" >
+3. Samples: 
+<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/following.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/small_target.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/non-target.png" width="200" >
 
 
 **4 Layer Net** 
@@ -54,10 +57,11 @@ filters=[32, 64, 128, 256]
 final_channels = [256]
 strides=[2]
 
-1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/loss.png" width="300" >
-2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/performance_4_layer.png" width="300" >
+1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/loss.png" width="400" >
+2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/performance_4_layer.png" width="400" >
 
-3. Samples:<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/following.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/target.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/non_target.png" width="300" >
+3. Samples: 
+<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/following.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/target.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/non_target.png" width="200" >
 
 We choose the 3 layer net as the final network choice. 
 
@@ -78,11 +82,10 @@ LR=0.01<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/
  I chose the learning rate of 0.01 worked best. It has good validation accuracy and converged faster. 
                    
 
-**Batch Size:** Normally a larger batch size is better and is constraint by the memory your gpu has. Also, there is a sweet spot in terms of computation speed/efficiency. Low batch size of 1 is generally not advisable. I tried many different size with learning rate fixed to 0.01. The batch size of 16 seemed to work the best. Higher batch size at learning rate of 0.01 where not converging faster. Seems like learning rate depends on the batch size. Please see below for more info. For this experiment I used only 1600 of training images. 
-Batch size ![batch size 8](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_8.png )
-Batch size ![batch size 16](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_16.png)
-Batch size ![batch size 32](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_32.png)
-Batch size ![batch size 64](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_64.png)
+**Batch Size:** Normally a larger batch size is better and is constraint by the memory your gpu has. Also, there is a sweet spot in terms of computation speed/efficiency. Low batch size of 1 is generally not advisable. I tried many different size with learning rate fixed to 0.01. Varying the size of images didn't effect the speed of running through epoch, however the batch size of 16 seemed to work the best. Network was converging slowly with higher batch size. Learning rate depends on the batch size. Please see below for more info. For this experiment I used only 1600 of training images. 
+Batch size 8:  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_8.png" width="300">  Batch size 16: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_16.png" width="300"> 
+
+Batch size 32: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_32.png" width="300">  Batch size 64: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_64.png" width="300"> 
 
 **Learning rate and batch size**
 Learning rate and batch size are somewhat dependent on each other. Learning rate of 0.01 may be high for smaller batch size than for larger batch size and may be small for a batch size of 32 or 64. Doing detailed analysis of both will be hard, but please see this interesting article on this https://miguel-data-sc.github.io/2017-11-05-first/. 
@@ -130,8 +133,6 @@ It was getting harder to keep tabs and figure out improvement in an organized wa
 
 # Final Model and Results
 
-**Performance number:** 
-![Performance](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/performance_numbers.png)
 
 **Results on following target:**
 ![following](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/following.png)
@@ -145,9 +146,13 @@ It was getting harder to keep tabs and figure out improvement in an organized wa
 **Training and Validation Loss:** 
 ![training_validation_loss](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png)
 
+**Performance number:** 
+![Performance](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/performance_numbers.png)
+
 **Final Model Weights**
 Model weights are in the folder final_model in the project directory. 
-[model_weights](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/model_weights/)
+* hdf5 file: [model_weights](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/model_weights/3_layer_net/model_weights_run_gpu_12)
+* model config file: [model_weights](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/model_weights/3_layer_net/config_model_weights_run_gpu_12)
 
 **Final HTML file**
 Please see the .html file for more details. 
