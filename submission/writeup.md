@@ -26,16 +26,16 @@ Skip connections provide information to the decoder from the earlier layer of th
 
 Tested with couple of different network design. All the design included convolution followed by pooling. I call this as one layer. We are using depth separable convolution and skip connections as suggested in the segmentation lab. They provide many benefits which are discussed above. In this section we will see how added more depth effects the performance of the network 
 
-For the discussion below, final_channels refer to the size of 1x1 convolution and filter refers to the channels of each of the convolution layer. Stides is fixed at 2.
+For the discussion below, final_channels refer to the size of 1x1 convolution and filter refers to the channels of each of the convolution layer. The decoder network has same size channels but in reverse. Stides is fixed at 2.
 
 **2 Layer Net**
  2 Layer net with filters=[32, 64], final_channels = [64]. The networked surprising well with final_score of 0.37. Please see figures below. It struggled to get larger object both target and non-targets and this makes sense since the field of view of 2 layer net isn't as large. 
 
-1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/loss.png" width="400" >
-2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/performance_2_layer_net.png" width="400" >
+1. Loss: <img src="images/2_layer_net/loss.png" width="400" >
+2. Metric: <img src="images/2_layer_net/performance_2_layer_net.png" width="400" >
 
 3. Samples: 
-<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/following.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/target.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/non-target.png" width="200" >
+<img src="images/2_layer_net/following.png" width="200">  <img src="images/2_layer_net/target.png" width="200">  <img src="images/2_layer_net/non-target.png" width="200" >
 
 
 **3 Layer Net (Best Results)**
@@ -44,11 +44,11 @@ filters=[32, 64, 128]
 final_channels = [128]
 Please see the sample of results below. 
 
-1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/loss.png" width="400" >
-2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/performance_3_layer.png" width="400" >
+1. Loss: <img src="images/final_results/loss.png" width="400" >
+2. Metric: <img src="images/final_results/performance_3_layer.png" width="400" >
 
 3. Samples: 
-<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/following.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/small_target.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/non-target.png" width="200" >
+<img src="images/final_results/following.png" width="200">  <img src="images/final_results/small_target.png" width="200">  <img src="images/final_results/non-target.png" width="200" >
 
 
 **4 Layer Net** 
@@ -57,11 +57,11 @@ filters=[32, 64, 128, 256]
 final_channels = [256]
 strides=[2]
 
-1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/loss.png" width="400" >
-2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/performance_4_layer.png" width="400" >
+1. Loss: <img src="images/4_layer_net/loss.png" width="400" >
+2. Metric: <img src="images/4_layer_net/performance_4_layer.png" width="400" >
 
 3. Samples: 
-<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/following.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/target.png" width="200">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/non_target.png" width="200" >
+<img src="images/4_layer_net/following.png" width="200">  <img src="images/4_layer_net/target.png" width="200">  <img src="images/4_layer_net/non_target.png" width="200" >
 
 We choose the 3 layer net as the final network choice. 
 
@@ -70,27 +70,27 @@ We choose the 3 layer net as the final network choice.
 The student explains their neural network parameters including the values selected and how these values were obtained (i.e. how was hyper tuning performed? Brute force, etc.) Hyper parameters include, but are not limited to:
 
 **Epoch:** Tried with few epochs at first. From the graph it seems that epoch of 2 and 3 the validation loss is same as training loss. However, the network performance wasn't all that good. On the other extreme I tried running with 50 epochs. You can see that after around 20 to 30 epochs the validation loss is not decreasing and infact is getting higher (not by a lot but still) that means the network is overfitting. Based on this I have found a epoch of 25 may be a good stopping point. 
-![epochs](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png)
+![epochs](images/epoch.png)
 
 **Learning Rate:** I played with different learning rates. The learning rate of 0.01 worked out well in practice. Since the validation and training loss was still jumping, I tried to lower the learning rates to 0.001 and 0.0001. At the lower end 0.0001 made the training much slower though it produced smoother graphs. Also the validation error at the end was higher. 
 
-LR=0.0001 <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_larger_network_0.0001_loss.png" width="300" >   LR=0.001 <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_0.001_loss.png" width="300">
+LR=0.0001 <img src="images/low_learning_rate/low_learning_larger_network_0.0001_loss.png" width="300" >   LR=0.001 <img src="images/low_learning_rate/low_learning_0.001_loss.png" width="300">
 
 
-LR=0.01<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png" width="300">   LR=0.1<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/learning_rate_0.1_bz_16.png" width="300">
+LR=0.01<img src="images/epoch.png" width="300">   LR=0.1<img src="images/low_learning_rate/learning_rate_0.1_bz_16.png" width="300">
  
  I chose the learning rate of 0.01 worked best. It has good validation accuracy and converged faster. 
                    
 
 **Batch Size:** Normally a larger batch size is better and is constraint by the memory your gpu has. Also, there is a sweet spot in terms of computation speed/efficiency. Low batch size of 1 is generally not advisable. I tried many different size with learning rate fixed to 0.01. Varying the size of images didn't effect the speed of running through epoch, however the batch size of 16 seemed to work the best. Network was converging slowly with higher batch size. Learning rate depends on the batch size. Please see below for more info. For this experiment I used only 1600 of training images. 
-Batch size 8:  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_8.png" width="300">  Batch size 16: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_16.png" width="300"> 
+Batch size 8:  <img src="images/batch_size/batch_size_8.png" width="300">  Batch size 16: <img src="images/batch_size/batch_size_16.png" width="300"> 
 
-Batch size 32: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_32.png" width="300">  Batch size 64: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_64.png" width="300"> 
+Batch size 32: <img src="images/batch_size/batch_size_32.png" width="300">  Batch size 64: <img src="images/batch_size/batch_size_64.png" width="300"> 
 
 **Learning rate and batch size**
 Learning rate and batch size are somewhat dependent on each other. Learning rate of 0.01 may be high for smaller batch size than for larger batch size and may be small for a batch size of 32 or 64. Doing detailed analysis of both will be hard, but please see this interesting article on this https://miguel-data-sc.github.io/2017-11-05-first/. 
 As an example, if we reduce the learning rate to 0.01 for batch size of 8 the results improve see figure. 
-Learning rate and Batch size ![learning rate batch size 8](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/learning_and_batch_size_8.png)
+Learning rate and Batch size ![learning rate batch size 8](images/low_learning_rate/learning_and_batch_size_8.png)
 
 
 ### 1x1 Convolutions
@@ -133,27 +133,49 @@ It was getting harder to keep tabs and figure out improvement in an organized wa
 
 # Final Model and Results
 
+**Architecture of the Final Model**
+Here is the final architecture of the model that performed the best. It has 3 layer in encoder and 3 layers in decoder. filter here referes to the channels of the layers. final_channels refer to the size of 1x1 convolution The decoder network has same size channels but in reverse. Stides is fixed at 2.
+
+filters=[32, 64, 128]
+final_channels = [128]
+* Architecture illustration ![arch](images/final_results/network_architecture.png)
+
 
 **Results on following target:**
-![following](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/following.png)
+![following](images/final_results/following.png)
 
 **Results on non-target:**
-![non-target](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/non-target.png)
+![non-target](images/final_results/non-target.png)
 
 **Results on small-target with other people:** 
-![target](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/small_target.png)
+![target](images/final_results/small_target.png)
 
 **Training and Validation Loss:** 
-![training_validation_loss](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png)
+![training_validation_loss](images/epoch.png)
 
 **Performance number:** 
-![Performance](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/performance_numbers.png)
+![Performance](images/final_results/performance_numbers.png)
 
 **Final Model Weights**
 Model weights are in the folder final_model in the project directory. 
-* hdf5 file: [model_weights](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/model_weights/3_layer_net/model_weights_run_gpu_12)
-* model config file: [model_weights](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/model_weights/3_layer_net/config_model_weights_run_gpu_12)
+* hdf5 file: [model_weights](model_weights_run_gpu_12.h5)
+* model config file: [model_weights](config_model_weights_run_gpu_12)
 
 **Final HTML file**
 Please see the .html file for more details. 
-[model_training.html](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/outputs/final_final_model_training.html)
+[model_training.html](/outputs/final_final_model_training.html)
+
+
+### Future Work
+
+The following steps can further improve the model's performance. 
+
+1. The data we have is still quite small. Increasing the dataset will improve the performance of the network. A smart way to add data will be to analyze where the model is struggling and add more data to address those failure/below-par performance cases. This can be iteratively done. Also, there may be data imbalance -- for example having fewer large people vs small targets. 
+
+2. I tried deeper network and even though the numbers were as good playing more with hyperparameters and reducing the size of the layers and training on larger data and more epochs can improve the model.
+
+3. Even though the model is tested in simulating model, adding data augmentation such as perspective/affine distortions as well as some noise and brightness changes can possibly improve the performance of the model. 
+
+4. Including other classes other than people can also possibly improve the networks performance on detecting target. 
+
+5. We can also use a pretrained network which have been trained on large dataset and finetune on this smaller dataset. Using these pretrained model can further improve the performance. 
