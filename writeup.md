@@ -26,7 +26,7 @@ Skip connections provide information to the decoder from the earlier layer of th
 
 Tested with couple of different network design. All the design included convolution followed by pooling. I call this as one layer. We are using depth separable convolution and skip connections as suggested in the segmentation lab. They provide many benefits which are discussed above. In this section we will see how added more depth effects the performance of the network 
 
-For the discussion below, final_channels refer to the size of 1x1 convolution and filter refers to the channels of each of the convolution layer. Stides is fixed at 2.
+For the discussion below, final_channels refer to the size of 1x1 convolution and filter refers to the channels of each of the convolution layer. The decoder network has same size channels but in reverse. Stides is fixed at 2.
 
 **2 Layer Net**
  2 Layer net with filters=[32, 64], final_channels = [64]. The networked surprising well with final_score of 0.37. Please see figures below. It struggled to get larger object both target and non-targets and this makes sense since the field of view of 2 layer net isn't as large. 
@@ -133,6 +133,13 @@ It was getting harder to keep tabs and figure out improvement in an organized wa
 
 # Final Model and Results
 
+**Architecture of the Final Model**
+Here is the final architecture of the model that performed the best. It has 3 layer in encoder and 3 layers in decoder. filter here referes to the channels of the layers. final_channels refer to the size of 1x1 convolution The decoder network has same size channels but in reverse. Stides is fixed at 2.
+
+filters=[32, 64, 128]
+final_channels = [128]
+* Architecture illustration ![arch](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/network_architecture.png)
+
 
 **Results on following target:**
 ![following](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/following.png)
@@ -157,3 +164,18 @@ Model weights are in the folder final_model in the project directory.
 **Final HTML file**
 Please see the .html file for more details. 
 [model_training.html](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/outputs/final_final_model_training.html)
+
+
+### Future Work
+
+The following steps can further improve the model's performance. 
+
+1. The data we have is still quite small. Increasing the dataset will improve the performance of the network. A smart way to add data will be to analyze where the model is struggling and add more data to address those failure/below-par performance cases. This can be iteratively done. Also, there may be data imbalance -- for example having fewer large people vs small targets. 
+
+2. I tried deeper network and even though the numbers were as good playing more with hyperparameters and reducing the size of the layers and training on larger data and more epochs can improve the model.
+
+3. Even though the model is tested in simulating model, adding data augmentation such as perspective/affine distortions as well as some noise and brightness changes can possibly improve the performance of the model. 
+
+4. Including other classes other than people can also possibly improve the networks performance on detecting target. 
+
+5. We can also use a pretrained network which have been trained on large dataset and finetune on this smaller dataset. Using these pretrained model can further improve the performance. 
