@@ -27,31 +27,46 @@ Skip connections provide information to the decoder from the earlier layer of th
 
 The student explains their neural network parameters including the values selected and how these values were obtained (i.e. how was hyper tuning performed? Brute force, etc.) Hyper parameters include, but are not limited to:
 
-Epoch - Tried with few epochs at first. From the graph it seems that epoch of 2 and 3 the validation loss is same as training loss. However, the network performance wasn't all that good. On the other extreme I tried running with 50 epochs. You can see that after around 20 to 30 epochs the validation loss is not decreasing and infact is getting higher (not by a lot but still) that means the network is overfitting. Based on this I have found a epoch of 25 may be a good stopping point. 
-![GitHub Logo](experiments/epoch.png)
+**Epoch:** Tried with few epochs at first. From the graph it seems that epoch of 2 and 3 the validation loss is same as training loss. However, the network performance wasn't all that good. On the other extreme I tried running with 50 epochs. You can see that after around 20 to 30 epochs the validation loss is not decreasing and infact is getting higher (not by a lot but still) that means the network is overfitting. Based on this I have found a epoch of 25 may be a good stopping point. 
+![epochs](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png)
 
-Learning Rate - I played with different learning rates. The learning rate of 0.01 worked out well in practice. Since the validation and training loss was still jumping, I tried to lower the learning rates to 0.001 and 0.0001. At the lower end 0.0001 made the training much slower though it produced smoother graphs. Also the validation error at the end was higher. 
-![GitHub Logo](experiments/learning_rate.png)
+**Learning Rate:** I played with different learning rates. The learning rate of 0.01 worked out well in practice. Since the validation and training loss was still jumping, I tried to lower the learning rates to 0.001 and 0.0001. At the lower end 0.0001 made the training much slower though it produced smoother graphs. Also the validation error at the end was higher. 
 
-Batch Size - Normally a larger batch size is better and is constraint by the memory your gpu has. Also, there is a sweet spot in terms of computation speed/efficiency. Low batch size of 1 is generally not advisable. So I worked with batch size of 8 and 16. Didn't try higher since that may reduce the speed. 
-![GitHub Logo](experiments/batch_size.png)
+LR=0.0001 <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_larger_network_0.0001_loss.png" width="300" >   LR=0.001 <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_0.001_loss.png" width="300">
 
-![GitHub Logo](experiments/img1.png)
 
-1x1 convolutions and when are they needed. 
------------------
-They are used to make the network fully convolutional. Normally one would take the last layer, flatten it and then connect with a fully connected layer. However, in flattening it and connecting it we hardcode the pixel location -- top-left pixel is now the first neuron and bottom-right the last most. The network loose the translation invariance. Also the kernel in the fully-connected layer can only work for certain size images since the size of the flattened layer can't change.
+LR=0.01<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png" width="300">   LR=0.1 <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/low_learning_rate/learning_rate_0.1_bz_16.png" width="300">
+ 
+ Learning rate of 0.01 worked best. It has good validation accuracy and converged faster. 
+                   
 
-On the other hand 1x1 convolution uses the same weight irrespective of the spatial location of the last layer of encoder. Hence, if the image is larger than the last larger of encoder will be larger but since 1x1 convolution works on depth, it isn't effected by it. The output of 1x1 will be larger size also. 1x1 convolution learn the dependencies between the channels irrespective of the pixel location. Making them translation invariant. They can be used to compress the channel size -- reduce redundancy and to develop more complex function using the individual channel values.
+**Batch Size:** Normally a larger batch size is better and is constraint by the memory your gpu has. Also, there is a sweet spot in terms of computation speed/efficiency. Low batch size of 1 is generally not advisable. I tried many different size with learning rate fixed to 0.01. The batch size of 16 seemed to work the best. Higher batch size at learning rate of 0.01 where not converging faster. Seems like learning rate depends on the batch size. Please see below for more info. For this experiment I used only 1600 of training images. 
+Batch size ![batch size 8](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_8.png )
+Batch size ![batch size 16](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_16.png)
+Batch size ![batch size 32](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_32.png)
+Batch size ![batch size 64](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/batch_size/batch_size_64.png)
+
+**Learning rate and batch size**
+Learning rate and batch size are somewhat dependent on each other. Learning rate of 0.01 may be high for smaller batch size than for larger batch size and may be small for a batch size of 32 or 64. Doing detailed analysis of both will be hard, but please see this interesting article on this https://miguel-data-sc.github.io/2017-11-05-first/. 
+As an example, if we reduce the learning rate to 0.01 for batch size of 8 the results improve see figure. 
+Learning rate and Batch size ![learning rate batch size 8](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/learning_and_batch_size_8.png)
+
+
+### 1x1 Convolutions
+
+Unlike having fully connected layer, 1x1 convolution provide many benefits compared. First it allow us to run the network on any size images. Also, unlike fully connected network it has much fewer parameters and achieves good accuracy. When netweork uses fully connected layer, they flatten the last layer and then connect with outputs. Because of this flattening the network  ends up hardcoding the relative pixel location in the penultimate layer (that has been flattened). That is top-left pixel has entirely different weights than the middle pixel and the bottom-right pixel. This isn't necessarily the cases for images, which are somewhat translation invariant. 
+
+1x1 convolution uses the same weight irrespective of the location of the last layer of encoder/penultimate -- providing translation invariance. 1x1 convolution learns the dependencies between the input and output channels irrespective of the pixel location. They can be often used to compress the channel size -- reduce redundancy and to develop more complex function using the individual channel values.
 
 Reasons for encoding / decoding images
 ---------------------------------------
-1. Encoder is learning features that can be used to detect objects. Normally we will have a class at the end.
-2. Decoder is used to recreate the segmentation mask from these features. The skip connections 
+1. Encoder network is a stack of convolution and pooling layers that are added on top of each other. The main idea of the encoder network is to learn the increasing complex set of features that can be used to understand the scene or classes that we are trying to segment. Encoder network layers reduces in spatial size and increase in terms of channels. They sacrifice the spatial information for more complex features that can detect background from hero and other people. 
+
+2. Decoder networks on the other hand that these abstract features which are low in spatial dimension and create segmentation mask of the same size as the original image. One can think of the decoder network as an upsampling layer, which uses the coarse level segmentation at the top most layer of the encoder and create a high resolution segmentation mask. The decoder network can have connection from earlier layers using skip connection or summation operation to get fine level of segmentation. 
     
 
-Issues:
-------
+### Challenges 
+
 The base net from the segmentation exercise worked quite well with the default data that was provided. The network has the following architecture.
    - input is (128, 128, 3)
    - encoder_layers =[16, 32, 64, 96, 128]
@@ -62,7 +77,7 @@ Got a final score of 0.36 with the default dataset that came with the assignment
 
 Tried bunch of different architectures in a more unorganized way. Like having larger hidden layers. For example increasing layers to [16, 32, 64, 128, 256] and 1x1 convolution of [128]. It did reasonable, but for the same number of epochs it was making the performance slightly worse. 
 
-**Actions to Remedy the Issues** 
+#### Actions to Remedy the Issues
 It was getting harder to keep tabs and figure out improvement in an organized way. So I did a couple of things to fix it.  
 
 1. So added code to dump the network architecture, hyper-parameters and the scores of the experiments I was running. 
@@ -75,3 +90,27 @@ It was getting harder to keep tabs and figure out improvement in an organized wa
    - Write down the params and the performs numbers to see how well I am doing with changing the architecture
    - Create a better dataset. With lots of small target 
 
+# Final Model and Results
+
+**Performance number:** 
+![Performance](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/performance_numbers.png)
+
+**Results on following target:**
+![following](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/following.png)
+
+**Results on non-target:**
+![non-target](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/non-target.png)
+
+**Results on small-target with other people:** 
+![target](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/final_results/small_target.png)
+
+**Training and Validation Loss:** 
+![training_validation_loss](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png)
+
+**Final Model Weights**
+Model weights are in the folder final_model in the project directory. 
+[model_weights](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/model_weights/)
+
+**Final HTML file**
+Please see the .html file for more details. 
+[model_training.html](https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/outputs/final_final_model_training.html)
