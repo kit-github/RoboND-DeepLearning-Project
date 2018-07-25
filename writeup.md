@@ -22,6 +22,44 @@ Depth separable filters use convolution at each channel separately. Applying reg
 **Skip Connections**
 Skip connections provide information to the decoder from the earlier layer of the network. This results in better reconstruction of the segmentation mask. This can be helpful to create sharp boundaries and also segment out smaller objects.
 
+### Network Design
+
+Tested with couple of different network design. All the design included convolution followed by pooling. I call this as one layer. We are using depth separable convolution and skip connections as suggested in the segmentation lab. They provide many benefits which are discussed above. In this section we will see how added more depth effects the performance of the network 
+
+final_channels refer to the size of 1x1 convolution and filter refers to the channels of each of the convolution layer. Stides is fixed at 2.
+**2 Layer Net**
+ 2 Layer net with filters=[32, 64], final_channels = [64]. The networked surprising well with final_score of 0.37. Please see figures below. It struggled to get larger object both target and non-targets and this makes sense since the field of view of 2 layer net isn't as large. 
+
+1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/loss.png" width="300" >
+2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/performance_2_layer_net.png" width="300" >
+
+3. Samples:<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/following.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/target.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/non-target.png" width="300" >
+
+
+**3 Layer Net (Best Results)**
+To improve the performance of the net I added extra layer. This way the net can see larger fov which will help with accurately segmenting larger objects in the scene. The network performs pretty well with final score of 0.429
+filters=[32, 64, 128]
+final_channels = [128]
+Please see the sample of results below. 
+
+1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/3_layer_net/loss.png" width="300" >
+2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/2_layer_net/performance_3_layer_net.png" width="300" >
+
+3. Samples:<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/3_layer_net/following.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/3_layer_net/target.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/3_layer_net/non-target.png" width="300" >
+
+
+**4 Layer Net** 
+To see if adding further layers will help the performance, I used 4 layer net. The net has even larger fov and it works pretty well. However, the performance was slightly worse that the 3 layer net with final score of 0.423
+filters=[32, 64, 128, 256]
+final_channels = [256]
+strides=[2]
+
+1. Loss: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/loss.png" width="300" >
+2. Metric: <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/performance_4_layer.png" width="300" >
+
+3. Samples:<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/following.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/target.png" width="300">  <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/4_layer_net/non_target.png" width="300" >
+
+We choose the 3 layer net as the final network choice. 
 
 ### Hyper-Parameters
 
@@ -35,9 +73,9 @@ The student explains their neural network parameters including the values select
 LR=0.0001 <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_larger_network_0.0001_loss.png" width="300" >   LR=0.001 <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/low_learning_0.001_loss.png" width="300">
 
 
-LR=0.01<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png" width="300">   LR=0.1 <img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/low_learning_rate/learning_rate_0.1_bz_16.png" width="300">
+LR=0.01<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/epoch.png" width="300">   LR=0.1<img src="https://github.com/kit-github/RoboND-DeepLearning-Project/blob/master/images/low_learning_rate/learning_rate_0.1_bz_16.png" width="300">
  
- Learning rate of 0.01 worked best. It has good validation accuracy and converged faster. 
+ I chose the learning rate of 0.01 worked best. It has good validation accuracy and converged faster. 
                    
 
 **Batch Size:** Normally a larger batch size is better and is constraint by the memory your gpu has. Also, there is a sweet spot in terms of computation speed/efficiency. Low batch size of 1 is generally not advisable. I tried many different size with learning rate fixed to 0.01. The batch size of 16 seemed to work the best. Higher batch size at learning rate of 0.01 where not converging faster. Seems like learning rate depends on the batch size. Please see below for more info. For this experiment I used only 1600 of training images. 
