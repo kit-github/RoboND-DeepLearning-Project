@@ -99,24 +99,24 @@ Unlike having fully connected layer, 1x1 convolution provide many benefits compa
 
 1x1 convolution uses the same weight irrespective of the location of the last layer of encoder/penultimate -- providing translation invariance. 1x1 convolution learns the dependencies between the input and output channels irrespective of the pixel location. They can be often used to compress the channel size -- reduce redundancy and to develop more complex function using the individual channel values.
 
-Reasons for encoding / decoding images
----------------------------------------
+#### Reasons for encoding / decoding images
+
 1. Encoder network is a stack of convolution and pooling layers that are added on top of each other. The main idea of the encoder network is to learn the increasing complex set of features that can be used to understand the scene or classes that we are trying to segment. Encoder network layers reduces in spatial size and increase in terms of channels. They sacrifice the spatial information for more complex features that can detect background from hero and other people. 
 
 2. Decoder networks on the other hand that these abstract features which are low in spatial dimension and create segmentation mask of the same size as the original image. One can think of the decoder network as an upsampling layer, which uses the coarse level segmentation at the top most layer of the encoder and create a high resolution segmentation mask. The decoder network can have connection from earlier layers using skip connection or summation operation to get fine level of segmentation. 
     
+### Model and data working well for other objects (dog, cat, car, etc.) 
+
+The model is trained on detect target object from non-target (other people) and the background. Since the model has been trained on detecting people and target object, this particular model won't work well objects it has been trained. So it won't work well on detecting cat, dog or car. However, if the model is trained with this data, it can learn to detect these objects. We may have to increase the depth of the network since the size of the object may vary from small cars to very larger car near the camera. Without training on these classes, it is hard to say what the network will do and perform on cat, dog and cars. 
 
 ### Challenges 
 
-The base net from the segmentation exercise worked quite well with the default data that was provided. The network has the following architecture.
-   - input is (128, 128, 3)
+I started with base net from the segmentation exercise with  the following architecture
    - encoder_layers =[16, 32, 64, 96, 128]
    - 1x1 convolution = [128] # single layer
    - decoder is just reverse of encoder
 
-Got a final score of 0.36 with the default dataset that came with the assignment. Close to 0.4 but not there yet. 
-
-Tried bunch of different architectures in a more unorganized way. Like having larger hidden layers. For example increasing layers to [16, 32, 64, 128, 256] and 1x1 convolution of [128]. It did reasonable, but for the same number of epochs it was making the performance slightly worse. 
+This worked quite well. Got a final score of 0.36, however I wasn't able to improve its performance to the level needed for this project. To remedy it, I had to take more methodical approach, after trying bunch of different architectures in hacky and unorganized way.
 
 #### Actions to Remedy the Issues
 It was getting harder to keep tabs and figure out improvement in an organized way. So I did a couple of things to fix it.  
