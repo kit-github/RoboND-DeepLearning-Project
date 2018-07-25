@@ -1,0 +1,20 @@
+{
+    "run_num": "run_gpu_12",
+    "filters": [
+        32,
+        64,
+        128
+    ],
+    "final_channels": [
+        128
+    ],
+    "strides": [
+        2
+    ],
+    "learning_rate": 0.01,
+    "batch_size": 16,
+    "num_epochs": 50,
+    "steps_per_epochs": 325,
+    "validation_steps": 70,
+    "workers": 2
+}
